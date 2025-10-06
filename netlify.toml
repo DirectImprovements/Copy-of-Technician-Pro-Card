@@ -1,5 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.ru"
-    X-Frame-Options = "ALLOW-FROM https://directimprovements.bitrix24.com"
+  # TEMP: allow CodePen + your Bitrix origins
+  Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://forms.directimprovements.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.ru https://codepen.io https://*.codepen.io https://cdpn.io"
+  # Optional legacy header (modern browsers ignore ALLOW-FROM)
+  X-Frame-Options = "ALLOW-FROM https://directimprovements.bitrix24.com"
