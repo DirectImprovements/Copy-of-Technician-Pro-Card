@@ -1,12 +1,6 @@
-# =========================
-# Netlify Configuration
-# =========================
-
 [build]
-  # Ensure devDependencies (vite, plugin-react) are installed first
   command = "npm install --include=dev --no-audit --no-fund && npm run build"
   publish = "dist"
 
 [build.environment]
-  # Pin a stable Node version Vite likes
   NODE_VERSION = "20"
