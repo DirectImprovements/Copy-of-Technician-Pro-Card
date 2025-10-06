@@ -1,17 +1,21 @@
-# --- Netlify build settings ---
+# =========================
+# Netlify Configuration
+# =========================
+
 [build]
-  # If you don't have package-lock.json, Netlify should still install dev deps,
-  # but to be explicit you can switch the next line to:
-  # command = "npm install --include=dev --no-audit --no-fund && npm run build"
-  command = "npm run build"
+  # Use npm install to ensure vite is available, then build
+  command = "npm install --include=dev --no-audit --no-fund && npm run build"
   publish = "dist"
 
-# --- Response headers applied to all paths ---
+# =========================
+# Custom HTTP Headers
+# =========================
 [[headers]]
   for = "/*"
   [headers.values]
-  # Allow your site to be embedded in Bitrix
+  # Allow embedding in Bitrix portals
   Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.net"
-  # Debug helpers so you can see headers in DevTools
+
+  # Helpful debug headers to confirm it’s working
   X-DI-Debug = "on"
   X-Test-Header = "hello"
