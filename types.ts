@@ -1,3 +1,4 @@
+
 export interface TechnicianStats {
   name: string;
   position: string;
@@ -11,7 +12,10 @@ export interface TechnicianStats {
 }
 
 export interface Technician extends TechnicianStats {
+  id: string;
   photoUrl: string;
+  quarter: string;
+  year: string;
 }
 
 export interface TemplateTechnician {

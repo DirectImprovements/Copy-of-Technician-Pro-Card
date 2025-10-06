@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export const ClubCaptainIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (

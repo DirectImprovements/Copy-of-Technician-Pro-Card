@@ -38,7 +38,7 @@ const badgeIcons: { [key: string]: React.ReactNode } = {
   'Club Captain': <MembershipIcon className="w-6 h-6 text-yellow-400" />,
 };
 
-export const PlayerCard: React.FC<PlayerCardProps> = ({ technician, quarter, year, companyLogo, companyName }) => {
+export const PlayerCard = React.forwardRef<HTMLDivElement, PlayerCardProps>(({ technician, quarter, year, companyLogo, companyName }, ref) => {
   const {
     name,
     position,
@@ -56,6 +56,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ technician, quarter, yea
 
   return (
     <div 
+      ref={ref}
       className="relative w-full aspect-[9/16] rounded-3xl shadow-2xl p-5 flex flex-col justify-between font-sans transition-all duration-300 border border-yellow-400/60 hover:scale-105 hover:drop-shadow-[0_0_20px_rgba(250,204,21,0.4)]"
       style={{ background: 'radial-gradient(circle at 50% 50%, #1e3a4b, #0f172a)' }}
     >
@@ -141,4 +142,4 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ technician, quarter, yea
       </footer>
     </div>
   );
-};
+});

@@ -1,12 +1,12 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { PlayerCard } from './components/PlayerCard';
 import { StatsInput } from './components/StatsInput';
 import { DropdownInput } from './components/DropdownInput';
 import { TechnicianModal } from './components/TechnicianModal';
+import { Leaderboard } from './components/Leaderboard';
 import { TrashIcon } from './components/icons/TrashIcon';
 import { PencilIcon } from './components/icons/PencilIcon';
-import { generateTechnicianData } from './services/geminiService';
+import { GeneratedCard } from './components/GeneratedCard';
 import type { Technician, TechnicianStats, TemplateTechnician } from './types';
 
 const INITIAL_TECHNICIAN_PHOTO = 'https://storage.googleapis.com/generative-ai-pro-isv-creativetool/83134ca4-6654-4649-bff3-a00d81b21235.png';
@@ -17,7 +17,6 @@ const positionOptions = ['Apprentice', 'Tier 1 Lead', 'Tier 2 Lead', 'Tier 3 Lea
 const quarterOptions = ['Q1', 'Q2', 'Q3', 'Q4'];
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from({ length: 2050 - currentYear + 1 }, (_, i) => currentYear + i);
-const badgeOptions = ['MVP', 'Ironman', 'Playmaker', 'Fan Favorite', 'Club Captain'];
 
 const clearedStats: TechnicianStats = {
   name: '',
@@ -40,13 +39,53 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
+const recalculateBadges = (technicians: Technician[]): Technician[] => {
+  if (technicians.length === 0) {
+    return [];
+  }
+
+  // Find max values across the board. Use 0 as a default if the list is empty or all values are negative.
+  const maxPerformance = Math.max(0, ...technicians.map(t => t.avgPerformance));
+  const maxImpact = Math.max(0, ...technicians.map(t => t.impactPoints));
+  const maxReviews = Math.max(0, ...technicians.map(t => t.fiveStarReviews));
+  const maxMemberships = Math.max(0, ...technicians.map(t => t.membershipsSold));
+
+  // Recalculate badges for each technician
+  return technicians.map(tech => {
+    const newBadges: string[] = [];
+
+    // Check if the technician's score is the max and is not zero
+    const isTopPerformance = tech.avgPerformance === maxPerformance && maxPerformance > 0;
+    const isTopImpact = tech.impactPoints === maxImpact && maxImpact > 0;
+    const isTopReviews = tech.fiveStarReviews === maxReviews && maxReviews > 0;
+    const isTopMemberships = tech.membershipsSold === maxMemberships && maxMemberships > 0;
+
+    if (isTopPerformance && isTopImpact) {
+      newBadges.push('MVP');
+    }
+    if (isTopPerformance) {
+      newBadges.push('Ironman');
+    }
+    if (isTopImpact) {
+      newBadges.push('Playmaker');
+    }
+    if (isTopReviews) {
+      newBadges.push('Fan Favorite');
+    }
+    if (isTopMemberships) {
+      newBadges.push('Club Captain');
+    }
+
+    return { ...tech, badges: newBadges };
+  });
+};
+
 
 const App: React.FC = () => {
   const [stats, setStats] = useState<TechnicianStats>(clearedStats);
   const [photoUrl, setPhotoUrl] = useState<string>(INITIAL_TECHNICIAN_PHOTO);
   const [quarter, setQuarter] = useState<string>('Q3');
   const [year, setYear] = useState<string>('2024');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [companyLogo, setCompanyLogo] = useState<string | null>(DEFAULT_COMPANY_LOGO);
@@ -56,6 +95,9 @@ const App: React.FC = () => {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTechnician, setEditingTechnician] = useState<TemplateTechnician | null>(null);
+
+  const [generatedTechnicians, setGeneratedTechnicians] = useState<Technician[]>([]);
+  const [leaderboardPeriod, setLeaderboardPeriod] = useState<'Weekly' | 'Monthly' | 'Quarterly'>('Weekly');
 
 
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -86,11 +128,11 @@ const App: React.FC = () => {
     }
   }, [templateTechnicians]);
 
-  const resetFormAndCard = useCallback(() => {
+  const resetFormAndCard = () => {
     setSelectedTemplateId('');
     setStats({...clearedStats});
     setPhotoUrl(INITIAL_TECHNICIAN_PHOTO);
-  }, []);
+  };
 
   const handleStatChange = (field: keyof TechnicianStats, value: string) => {
     let finalValue: string | number = value;
@@ -113,15 +155,6 @@ const App: React.FC = () => {
     }));
   };
 
-  const handleBadgeChange = (badge: string) => {
-    setStats(prev => {
-      const newBadges = prev.badges?.includes(badge)
-        ? prev.badges.filter(b => b !== badge)
-        : [...(prev.badges || []), badge];
-      return { ...prev, badges: newBadges };
-    });
-  };
-
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
@@ -129,26 +162,8 @@ const App: React.FC = () => {
       setCompanyLogo(base64);
     }
   };
-  
-  const handleGenerateData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const generatedData = await generateTechnicianData();
-      if (generatedData) {
-        setStats(generatedData);
-        setSelectedTemplateId('');
-        setPhotoUrl(INITIAL_TECHNICIAN_PHOTO);
-      }
-    } catch (err) {
-      setError('Failed to generate data. Please try again.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
-  const handleClear = useCallback(() => {
+  const handleClear = () => {
     resetFormAndCard();
     setQuarter('Q1');
     setYear(new Date().getFullYear().toString());
@@ -156,7 +171,7 @@ const App: React.FC = () => {
     setCompanyName(DEFAULT_COMPANY_NAME);
     if (logoInputRef.current) logoInputRef.current.value = '';
     setError(null);
-  }, [resetFormAndCard]);
+  };
 
   const handleTemplateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
@@ -169,7 +184,7 @@ const App: React.FC = () => {
       } else {
         const selectedTech = templateTechnicians.find(t => t.id === value);
         if (selectedTech) {
-          setStats(prev => ({ ...prev, name: selectedTech.name, technicianNumber: selectedTech.technicianNumber, position: selectedTech.position, badges: prev.badges })); // Keep badges, but update other info
+          setStats(prev => ({ ...prev, name: selectedTech.name, technicianNumber: selectedTech.technicianNumber, position: selectedTech.position, badges: [] })); // Clear badges when switching
           setPhotoUrl(selectedTech.photoUrl);
         }
       }
@@ -224,8 +239,10 @@ const App: React.FC = () => {
     const isConfirmed = window.confirm(`Are you sure you want to delete the template for "${techToDelete.name}"?`);
     if (isConfirmed) {
         setTemplateTechnicians(prev => prev.filter(t => t.id !== selectedTemplateId));
-        // Directly reset the form and card state after deletion.
-        resetFormAndCard();
+        // Directly reset the form and card state here to ensure reliability.
+        setSelectedTemplateId('');
+        setStats({...clearedStats});
+        setPhotoUrl(INITIAL_TECHNICIAN_PHOTO);
     }
   };
 
@@ -242,7 +259,33 @@ const App: React.FC = () => {
     }
   };
 
-  const technicianData: Technician = { ...stats, photoUrl };
+  const handleAddTechnicianToLeaderboard = () => {
+    if (!stats.name) {
+        setError("Technician name is required to add to leaderboard.");
+        return;
+    }
+    const newTechnician: Technician = {
+      ...stats,
+      photoUrl,
+      quarter,
+      year,
+      id: `${stats.name}-${Date.now()}` // Simple unique ID
+    };
+
+    setGeneratedTechnicians(prev => {
+        const updatedList = [...prev, newTechnician];
+        return recalculateBadges(updatedList);
+    });
+  };
+  
+  const handleRemoveTechnicianFromLeaderboard = (technicianId: string) => {
+     setGeneratedTechnicians(prev => {
+        const updatedList = prev.filter(tech => tech.id !== technicianId);
+        return recalculateBadges(updatedList);
+    });
+  };
+
+  const technicianData: Technician = { ...stats, photoUrl, id: '', quarter, year };
 
   return (
     <>
@@ -250,10 +293,10 @@ const App: React.FC = () => {
         <div className="container mx-auto">
           <header className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
-              Technician Pro Cards
+              Technician Pro Cards and Leaderboard
             </h1>
             <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
-              Celebrate excellence by creating sports-style performance cards for your team members.
+              See who’s leading the pack—recognize standouts and reward results so the whole team raises the bar.
             </p>
           </header>
 
@@ -367,47 +410,17 @@ const App: React.FC = () => {
                   onChange={e => handleStatChange('membershipsSold', e.target.value)}
                 />
 
-                <div className="border-t border-gray-200 my-4"></div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-2">Badges</label>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        {badgeOptions.map(badge => (
-                            <label key={badge} className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={stats.badges?.includes(badge) || false}
-                                    onChange={() => handleBadgeChange(badge)}
-                                    className="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                                />
-                                <span className="text-sm text-gray-700">{badge}</span>
-                            </label>
-                        ))}
-                    </div>
-                </div>
-
                 <div className="flex flex-col gap-3 pt-4">
+                   <button
+                        onClick={handleAddTechnicianToLeaderboard}
+                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300"
+                    >
+                        Add to Leaderboard
+                    </button>
                   <div className="flex flex-col sm:flex-row gap-3">
                       <button
-                      onClick={handleGenerateData}
-                      disabled={isLoading}
-                      className="w-full flex items-center justify-center bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                      {isLoading ? (
-                          <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Generating...
-                          </>
-                      ) : (
-                          'Generate Random Data'
-                      )}
-                      </button>
-                      <button
                       onClick={handleClear}
-                      className="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition-colors"
+                      className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition-colors"
                       >
                       Reset
                       </button>
@@ -429,6 +442,35 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
+           {generatedTechnicians.length > 0 && (
+            <>
+              <div className="mt-12">
+                <Leaderboard 
+                  technicians={generatedTechnicians}
+                  onRemove={handleRemoveTechnicianFromLeaderboard}
+                  companyLogo={companyLogo}
+                  companyName={companyName}
+                  quarter={quarter}
+                  year={year}
+                  leaderboardPeriod={leaderboardPeriod}
+                  onPeriodChange={setLeaderboardPeriod}
+                />
+              </div>
+              <div className="mt-12">
+                <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Generated Pro Cards</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {generatedTechnicians.map((tech) => (
+                    <GeneratedCard
+                      key={tech.id}
+                      technician={tech}
+                      companyLogo={companyLogo}
+                      companyName={companyName}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <TechnicianModal 
