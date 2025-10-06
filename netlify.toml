@@ -1,0 +1,8 @@
+[build]
+  command = "vite build"
+  publish = "dist"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+  Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.net"
