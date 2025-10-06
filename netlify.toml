@@ -1,19 +1,12 @@
-# Netlify build config
+# =========================
+# Netlify Configuration
+# =========================
+
 [build]
-  # Ensure devDependencies (vite, plugin-react) are installed before build
+  # Ensure devDependencies (vite, plugin-react) are installed first
   command = "npm install --include=dev --no-audit --no-fund && npm run build"
   publish = "dist"
 
-# Pin Node to something Vite is happy with
 [build.environment]
+  # Pin a stable Node version Vite likes
   NODE_VERSION = "20"
-
-# Global headers applied to every path
-[[headers]]
-  for = "/*"
-  [headers.values]
-  # Allow embedding inside your Bitrix portal
-  Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.net"
-  # Debug helpers so you can confirm headers are applied
-  X-DI-Debug = "on"
-  X-Test-Header = "hello"
