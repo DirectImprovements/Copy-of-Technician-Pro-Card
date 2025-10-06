@@ -1,21 +1,15 @@
-# =========================
-# Netlify Configuration
-# =========================
-
+# Netlify: pin Node 20 and build the Vite app.
 [build]
-  # Use npm install to ensure vite is available, then build
   command = "npm install --include=dev --no-audit --no-fund && npm run build"
   publish = "dist"
 
-# =========================
-# Custom HTTP Headers
-# =========================
+[build.environment]
+  NODE_VERSION = "20"
+
+# Global HTTP headers (this is your CSP for Bitrix).
 [[headers]]
   for = "/*"
   [headers.values]
-  # Allow embedding in Bitrix portals
   Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.net"
-
-  # Helpful debug headers to confirm it’s working
   X-DI-Debug = "on"
   X-Test-Header = "hello"
