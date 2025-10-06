@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && cp public/_headers dist/_headers",
+    "build": "vite build && cpy public/_headers dist --rename=_headers",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "cpy-cli": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }
