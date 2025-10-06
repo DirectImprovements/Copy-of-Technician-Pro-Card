@@ -1,15 +1,19 @@
-# Netlify: pin Node 20 and build the Vite app.
+# Netlify build config
 [build]
+  # Ensure devDependencies (vite, plugin-react) are installed before build
   command = "npm install --include=dev --no-audit --no-fund && npm run build"
   publish = "dist"
 
+# Pin Node to something Vite is happy with
 [build.environment]
   NODE_VERSION = "20"
 
-# Global HTTP headers (this is your CSP for Bitrix).
+# Global headers applied to every path
 [[headers]]
   for = "/*"
   [headers.values]
+  # Allow embedding inside your Bitrix portal
   Content-Security-Policy = "frame-ancestors 'self' https://directimprovements.bitrix24.com https://*.bitrix24.com https://*.bitrix24.site https://*.bitrix24.us https://*.bitrix24.net"
+  # Debug helpers so you can confirm headers are applied
   X-DI-Debug = "on"
   X-Test-Header = "hello"
