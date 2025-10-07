@@ -1,0 +1,25 @@
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+}
+
+.app-container {
+  /* This width is large enough for the 2xl Tailwind breakpoint (1536px) plus margins */
+  width: 1720px;
+  /* Height is determined by the content */
+  transform-origin: center center;
+  transition: transform 0.2s ease-out;
+  /* The scale transform will be applied via an inline style from React */
+}

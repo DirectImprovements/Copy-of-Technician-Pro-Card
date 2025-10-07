@@ -10,7 +10,7 @@ import { GeneratedCard } from './components/GeneratedCard';
 import type { Technician, TechnicianStats, TemplateTechnician } from './types';
 
 const INITIAL_TECHNICIAN_PHOTO = 'https://storage.googleapis.com/generative-ai-pro-isv-creativetool/83134ca4-6654-4649-bff3-a00d81b21235.png';
-const DEFAULT_COMPANY_LOGO = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNGQUNDMTUiLz4KPHRleHQgeD0iNTAlIiB5PSI1MiUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaGyPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zערpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMwRjE3MkEiPkQ8L3RleHQ+Cjwvc3ZnPgo=';
+const DEFAULT_COMPANY_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAgVBMVEUiAAD////pSzrpRzjpRjhkAABmAABkAABlAABnAAF3BweKAACMAADpSTDtUC/sUy/tVC/rUjBkAABjAAAHAADpSDTtUSB1AgLaAADpSDHqSjLqRzXoRjHpRzTqSTTqSDRpAADpPyDoQjLpQTTpQDTpOzLpOzTpOC3pNi3pNC3pMCzpLCz5pqz7uLr9z9P+7vBh8hTDAAAEXElEQVR4nO2da3uqOBSGM8EYb0VAxQvUaq219v//7W5rQERBEChycp/2WWvPY0IScs9kEtJkBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPyT/v56E5f5/X6/f7u6/b73+22z/d3vK7f9t91v/z5f3x/5+m0/b7l/37e3V+/vV+8/b7v/fm+3/n7fX/39vuvtS4VpLP+7X/9e9v/6e/S/5e/b7z+vXzYudn3FmM1fE+3+fN9923//vuv2l0p/pPx/e3nL/P35+qU+T/i+2s9S/p/y/fr7D9nf3t+vp3w/5+uK769L5R+2l/L+9d9LpZ8T/p/uV+9fi+5b5W+d/l86/VP5/pW+l/B/nf7e+f9V/n6/fv0+4vt1/n34fMv8b8q/p/w/5f+T769/L/v7/9ufT/k+5ftr/y9+v/L9tZ9v+S6V/6f8H+XrS+f/S+ffK3+f8v2d7+9/L3+/cn25b9//8y3/t+e7z/fn+/fXf+/fP9+v/+8/7+8f/35/v//9+f79eS/y/S/kv9H5f9M+b/U/s/0/1N+X/L/W36f8f1r+X3L/9e+Xz7/W/r/U/6f8n+V71/+f+X76y/b3//sv3/Zb7/9f2v7/df2/z//v35/v2T7+9S/n+l/B/l+yv/p3z/kv9T/r/i+yvfX/n+yvdX/n/l/2t+f/v/S/5/xfcr36/6f6T8v/L/qu9X/n+l+yv/t/L/S/e/kv/3+f8l+0sAAAAAZBv/71fR91fRnyv7XxX/p/h+VfS/Kvpf5f9S2Z8q+1+V/Sv/z/D9lf9TfP8q+1/R/Sv935T9q/jfRf8vS//7ov9d9P9D//tD/zsy/B8Z+V8V/C8K/ncF/zsD/wsj/y0j/60B/wsT/80J/M8K/vMh/I8g/Ccg/BMS/kkB/vMj/IcB+M+H8D8OwX8Ygv84BP9xCP4zIfiPhfAvCuF/GIH/OAT/Qwj+gyH4TwfgPx6A/3gA/sMA/IcB+A8D8B8G4D8MgP8wAP/BAPyHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+P4j77e233G+/32f+92+f75fuH3d66/v71V8oPz/a7f8t8/f17/d/pT7L+L4k/G/9vuv6fN/fbfv13w9X+m0vla+c/0/T/6Xy/f7u+/X7z6/bb7+/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+h1k0/E8I/mcE/zMC/4kB/8QAf+IAf/EA//EAP/CAf/AAPvDAfvCAfvAAPvAAPvAAPvAAPvCAPvCAPnAAPvBAPnAAPnDAn3DAn3DAnzDAnzDAnzDAnzDAnzDAny3AnzLAnyjAnyjAnzDAnzC/nyzAnzLAnzC/nzS/nzS/nzTAnzbAnzbAnzS/nzTAnzbAnza/nxTAnzbAnxTAnxbAnxbAnxTAnxbAnxS/nyS/nyS/nwRkBAAAAABAQAAAAAAAAAAAAKz4B1QkL2DIfv0aAAAAAElFTkSuQmCC';
 const DEFAULT_COMPANY_NAME = 'Direct Improvements';
 
 const positionOptions = ['Apprentice', 'Tier 1 Lead', 'Tier 2 Lead', 'Tier 3 Lead', 'Tier 4 Senior Lead', 'Tier 5 Veteran Lead'];
@@ -101,6 +101,40 @@ const App: React.FC = () => {
 
 
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateScale = () => {
+        const { clientWidth, clientHeight } = document.documentElement;
+        
+        const contentWidth = container.offsetWidth;
+        const contentHeight = container.offsetHeight;
+
+        if (contentWidth === 0 || contentHeight === 0) return;
+
+        const scale = Math.min(clientWidth / contentWidth, clientHeight / contentHeight);
+
+        container.style.transform = `scale(${scale})`;
+    };
+    
+    const resizeObserver = new ResizeObserver(() => {
+        window.requestAnimationFrame(updateScale);
+    });
+    resizeObserver.observe(container);
+
+    window.addEventListener('resize', updateScale);
+    
+    const timeoutId = setTimeout(updateScale, 100);
+
+    return () => {
+        clearTimeout(timeoutId);
+        resizeObserver.disconnect();
+        window.removeEventListener('resize', updateScale);
+    };
+  }, []);
 
   // Effect for loading from localStorage on initial mount
   useEffect(() => {
@@ -288,8 +322,8 @@ const App: React.FC = () => {
   const technicianData: Technician = { ...stats, photoUrl, id: '', quarter, year };
 
   return (
-    <>
-      <div className="min-h-screen bg-white text-gray-900 font-sans p-4 sm:p-6 lg:p-8">
+    <div className="app-container" ref={containerRef}>
+      <div className="bg-white text-gray-900 font-sans p-4 sm:p-6 lg:p-8">
         <div className="container mx-auto">
           <header className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
@@ -487,7 +521,7 @@ const App: React.FC = () => {
         technicianToEdit={editingTechnician}
         positionOptions={positionOptions}
       />
-    </>
+    </div>
   );
 };
 
