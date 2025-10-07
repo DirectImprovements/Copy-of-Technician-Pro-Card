@@ -101,40 +101,6 @@ const App: React.FC = () => {
 
 
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateScale = () => {
-        const { clientWidth, clientHeight } = document.documentElement;
-        
-        const contentWidth = container.offsetWidth;
-        const contentHeight = container.offsetHeight;
-
-        if (contentWidth === 0 || contentHeight === 0) return;
-
-        const scale = Math.min(clientWidth / contentWidth, clientHeight / contentHeight);
-
-        container.style.transform = `scale(${scale})`;
-    };
-    
-    const resizeObserver = new ResizeObserver(() => {
-        window.requestAnimationFrame(updateScale);
-    });
-    resizeObserver.observe(container);
-
-    window.addEventListener('resize', updateScale);
-    
-    const timeoutId = setTimeout(updateScale, 100);
-
-    return () => {
-        clearTimeout(timeoutId);
-        resizeObserver.disconnect();
-        window.removeEventListener('resize', updateScale);
-    };
-  }, []);
 
   // Effect for loading from localStorage on initial mount
   useEffect(() => {
@@ -322,191 +288,196 @@ const App: React.FC = () => {
   const technicianData: Technician = { ...stats, photoUrl, id: '', quarter, year };
 
   return (
-    <div className="app-container" ref={containerRef}>
-      <div className="bg-white text-gray-900 font-sans p-4 sm:p-6 lg:p-8">
-        <div className="container mx-auto">
-          <header className="text-center mb-8">
-            <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
-              Technician Pro Cards and Leaderboard
-            </h1>
-            <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
-              See who’s leading the pack—recognize standouts and reward results so the whole team raises the bar.
-            </p>
-          </header>
+    <div className="app-container">
+      <div className="flex flex-col font-sans text-gray-900">
+        
+        {/* === Top Section === */}
+        <div className="p-8">
+            <header className="text-center mb-8">
+                <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
+                Technician Pro Cards and Leaderboard
+                </h1>
+                <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
+                See who’s leading the pack—recognize standouts and reward results so the whole team raises the bar.
+                </p>
+            </header>
 
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-1/3 bg-gray-50 p-6 rounded-2xl shadow-lg border border-gray-200">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">Generate Pro Card</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">Company Logo</label>
-                  <input
-                    ref={logoInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-500 file:text-white hover:file:bg-teal-600 transition-colors cursor-pointer"
-                  />
-                </div>
-                <StatsInput
-                  label="Company Name"
-                  type="text"
-                  value={companyName}
-                  onChange={e => setCompanyName(e.target.value)}
-                />
+            <div className="flex flex-col lg:flex-row gap-8">
+                <div className="lg:w-1/3 bg-gray-50 p-6 rounded-2xl shadow-lg border border-gray-200">
+                  <h2 className="text-2xl font-semibold mb-6 text-gray-800">Generate Pro Card</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-2">Company Logo</label>
+                      <input
+                        ref={logoInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-500 file:text-white hover:file:bg-teal-600 transition-colors cursor-pointer"
+                      />
+                    </div>
+                    <StatsInput
+                      label="Company Name"
+                      type="text"
+                      value={companyName}
+                      onChange={e => setCompanyName(e.target.value)}
+                    />
 
-                <div className="border-t border-gray-200 my-4"></div>
+                    <div className="border-t border-gray-200 my-4"></div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Technician</label>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-grow">
-                      <select
-                        value={selectedTemplateId}
-                        onChange={handleTemplateChange}
-                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors appearance-none cursor-pointer pr-8"
-                        aria-label="Select Technician Template"
-                      >
-                        <option value="">-- New Card --</option>
-                        {templateTechnicians.map(tech => (
-                          <option key={tech.id} value={tech.id}>{tech.name}</option>
-                        ))}
-                        <option value="add" className="font-bold text-blue-400">＋ Add New Technician...</option>
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Technician</label>
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-grow">
+                          <select
+                            value={selectedTemplateId}
+                            onChange={handleTemplateChange}
+                            className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors appearance-none cursor-pointer pr-8"
+                            aria-label="Select Technician Template"
+                          >
+                            <option value="">-- New Card --</option>
+                            {templateTechnicians.map(tech => (
+                              <option key={tech.id} value={tech.id}>{tech.name}</option>
+                            ))}
+                            <option value="add" className="font-bold text-blue-400">＋ Add New Technician...</option>
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                          </div>
+                        </div>
+                        {selectedTemplateId && (
+                           <div className="flex items-center gap-2">
+                            <button 
+                              onClick={handleOpenEditModal}
+                              className="p-2 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-lg transition-colors"
+                              aria-label="Edit Technician"
+                            >
+                              <PencilIcon className="w-5 h-5" />
+                            </button>
+                            <button 
+                              onClick={handleDeleteTechnician}
+                              className="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors"
+                              aria-label="Delete Technician"
+                            >
+                              <TrashIcon className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    {selectedTemplateId && (
-                       <div className="flex items-center gap-2">
-                        <button 
-                          onClick={handleOpenEditModal}
-                          className="p-2 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-lg transition-colors"
-                          aria-label="Edit Technician"
-                        >
-                          <PencilIcon className="w-5 h-5" />
-                        </button>
-                        <button 
-                          onClick={handleDeleteTechnician}
-                          className="p-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors"
-                          aria-label="Delete Technician"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              
-                <div className="grid grid-cols-2 gap-4">
-                  <DropdownInput
-                      label="Quarter"
-                      value={quarter}
-                      onChange={e => setQuarter(e.target.value)}
-                      options={quarterOptions}
-                  />
-                  <DropdownInput
-                      label="Year"
-                      value={year}
-                      onChange={e => setYear(e.target.value)}
-                      options={yearOptions}
-                  />
-                </div>
-                <StatsInput
-                  label="Avg. Performance %"
-                  type="number"
-                  value={stats.avgPerformance.toString()}
-                  onChange={e => handleStatChange('avgPerformance', e.target.value)}
-                  max={100}
-                />
-                <StatsInput
-                  label="Avg. Job Ticket Value ($)"
-                  type="number"
-                  value={stats.ticketValue.toString()}
-                  onChange={e => handleStatChange('ticketValue', e.target.value)}
-                />
-                <StatsInput
-                  label="Avg. Impact Points"
-                  type="number"
-                  value={stats.impactPoints.toString()}
-                  onChange={e => handleStatChange('impactPoints', e.target.value)}
-                />
-                <StatsInput
-                  label="5-Star Reviews"
-                  type="number"
-                  value={stats.fiveStarReviews.toString()}
-                  onChange={e => handleStatChange('fiveStarReviews', e.target.value)}
-                />
-                <StatsInput
-                  label="Memberships Sold"
-                  type="number"
-                  value={stats.membershipsSold.toString()}
-                  onChange={e => handleStatChange('membershipsSold', e.target.value)}
-                />
-
-                <div className="flex flex-col gap-3 pt-4">
-                   <button
-                        onClick={handleAddTechnicianToLeaderboard}
-                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300"
-                    >
-                        Add to Leaderboard
-                    </button>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                      onClick={handleClear}
-                      className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition-colors"
-                      >
-                      Reset
-                      </button>
-                  </div>
-                </div>
-                {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
-              </div>
-            </div>
-
-            <div className="lg:w-2/3 flex items-center justify-center p-4">
-              <div className="w-full max-w-sm">
-                  <PlayerCard 
-                    technician={technicianData} 
-                    quarter={quarter} 
-                    year={year}
-                    companyLogo={companyLogo}
-                    companyName={companyName}
-                  />
-              </div>
-            </div>
-          </div>
-           {generatedTechnicians.length > 0 && (
-            <>
-              <div className="mt-12">
-                <Leaderboard 
-                  technicians={generatedTechnicians}
-                  onRemove={handleRemoveTechnicianFromLeaderboard}
-                  companyLogo={companyLogo}
-                  companyName={companyName}
-                  quarter={quarter}
-                  year={year}
-                  leaderboardPeriod={leaderboardPeriod}
-                  onPeriodChange={setLeaderboardPeriod}
-                />
-              </div>
-              <div className="mt-12">
-                <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Generated Pro Cards</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {generatedTechnicians.map((tech) => (
-                    <GeneratedCard
-                      key={tech.id}
-                      technician={tech}
-                      companyLogo={companyLogo}
-                      companyName={companyName}
+                  
+                    <div className="grid grid-cols-2 gap-4">
+                      <DropdownInput
+                          label="Quarter"
+                          value={quarter}
+                          onChange={e => setQuarter(e.target.value)}
+                          options={quarterOptions}
+                      />
+                      <DropdownInput
+                          label="Year"
+                          value={year}
+                          onChange={e => setYear(e.target.value)}
+                          options={yearOptions}
+                      />
+                    </div>
+                    <StatsInput
+                      label="Avg. Performance %"
+                      type="number"
+                      value={stats.avgPerformance.toString()}
+                      onChange={e => handleStatChange('avgPerformance', e.target.value)}
+                      max={100}
                     />
-                  ))}
+                    <StatsInput
+                      label="Avg. Job Ticket Value ($)"
+                      type="number"
+                      value={stats.ticketValue.toString()}
+                      onChange={e => handleStatChange('ticketValue', e.target.value)}
+                    />
+                    <StatsInput
+                      label="Avg. Impact Points"
+                      type="number"
+                      value={stats.impactPoints.toString()}
+                      onChange={e => handleStatChange('impactPoints', e.target.value)}
+                    />
+                    <StatsInput
+                      label="5-Star Reviews"
+                      type="number"
+                      value={stats.fiveStarReviews.toString()}
+                      onChange={e => handleStatChange('fiveStarReviews', e.target.value)}
+                    />
+                    <StatsInput
+                      label="Memberships Sold"
+                      type="number"
+                      value={stats.membershipsSold.toString()}
+                      onChange={e => handleStatChange('membershipsSold', e.target.value)}
+                    />
+
+                    <div className="flex flex-col gap-3 pt-4">
+                       <button
+                            onClick={handleAddTechnicianToLeaderboard}
+                            className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300"
+                        >
+                            Add to Leaderboard
+                        </button>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                          <button
+                          onClick={handleClear}
+                          className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition-colors"
+                          >
+                          Reset
+                          </button>
+                      </div>
+                    </div>
+                    {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+
+                <div className="lg:w-2/3 flex items-center justify-center p-4">
+                  <div className="w-full max-w-sm">
+                      <PlayerCard 
+                        technician={technicianData} 
+                        quarter={quarter} 
+                        year={year}
+                        companyLogo={companyLogo}
+                        companyName={companyName}
+                      />
+                  </div>
+                </div>
+            </div>
         </div>
+
+        {/* === Bottom Section === */}
+        {generatedTechnicians.length > 0 && (
+            <div className="px-8 pb-8">
+                <div className="">
+                    <Leaderboard 
+                        technicians={generatedTechnicians}
+                        onRemove={handleRemoveTechnicianFromLeaderboard}
+                        companyLogo={companyLogo}
+                        companyName={companyName}
+                        quarter={quarter}
+                        year={year}
+                        leaderboardPeriod={leaderboardPeriod}
+                        onPeriodChange={setLeaderboardPeriod}
+                    />
+                    <div className="mt-12">
+                        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Generated Pro Cards</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {generatedTechnicians.map((tech) => (
+                            <GeneratedCard
+                            key={tech.id}
+                            technician={tech}
+                            companyLogo={companyLogo}
+                            companyName={companyName}
+                            />
+                        ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
       </div>
+
       <TechnicianModal 
         isOpen={isModalOpen}
         onClose={() => {

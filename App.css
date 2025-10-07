@@ -1,25 +1,41 @@
-html, body, #root {
+html, body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: hidden; /* No browser scrollbars */
+  background-color: #f0f2f5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f2f5;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;   /* Enable vertical scrolling INSIDE the app container */
+  overflow-x: hidden;  /* Disable horizontal scrolling */
 }
 
 .app-container {
-  /* This width is large enough for the 2xl Tailwind breakpoint (1536px) plus margins */
-  width: 1720px;
-  /* Height is determined by the content */
-  transform-origin: center center;
-  transition: transform 0.2s ease-out;
-  /* The scale transform will be applied via an inline style from React */
+  width: 100%;
+  min-height: 100%; /* Ensures background color fills viewport on short content */
+  background-color: #ffffff;
+}
+
+/* Custom scrollbar styling for the root element */
+#root::-webkit-scrollbar {
+  width: 8px;
+}
+
+#root::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+#root::-webkit-scrollbar-thumb {
+  background: #a0aec0;
+  border-radius: 10px;
+}
+
+#root::-webkit-scrollbar-thumb:hover {
+  background: #718096;
 }
