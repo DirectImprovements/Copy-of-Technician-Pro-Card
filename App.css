@@ -39,3 +39,9 @@ html, body {
 #root::-webkit-scrollbar-thumb:hover {
   background: #718096;
 }
+
+/* Temporarily expand the leaderboard for download to prevent scrollbars in the image */
+.leaderboard-download-mode {
+  overflow: visible !important;
+  height: auto !important;
+}

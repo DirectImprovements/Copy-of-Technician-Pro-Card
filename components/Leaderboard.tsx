@@ -1,5 +1,4 @@
-
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import type { Technician } from '../types';
 import { TrashIcon } from './icons/TrashIcon';
 import { MembershipIcon } from './icons/MembershipIcon';
@@ -28,22 +27,30 @@ const badgeIcons: { [key: string]: React.ReactNode } = {
 export const Leaderboard: React.FC<LeaderboardProps> = ({ technicians, onRemove, companyLogo, companyName, quarter, year, leaderboardPeriod, onPeriodChange }) => {
   const sortedTechnicians = [...technicians].sort((a, b) => b.avgPerformance - a.avgPerformance);
   const leaderboardRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownloadLeaderboard = useCallback(() => {
     if (leaderboardRef.current === null) {
       return;
     }
-    htmlToImage.toPng(leaderboardRef.current, { cacheBust: true, pixelRatio: 2 })
-      .then((dataUrl: string) => {
-        const link = document.createElement('a');
-        link.download = `${leaderboardPeriod}-leaderboard-${quarter}-${year}.png`;
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch((err: any) => {
-        console.error('Failed to generate leaderboard image', err);
-        // Optionally, show an error to the user
-      });
+    setIsDownloading(true);
+
+    // Use a timeout to allow the DOM to re-render with the new styles before capturing
+    setTimeout(() => {
+      htmlToImage.toPng(leaderboardRef.current, { cacheBust: true, pixelRatio: 2 })
+        .then((dataUrl: string) => {
+          const link = document.createElement('a');
+          link.download = `${leaderboardPeriod}-leaderboard-${quarter}-${year}.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err: any) => {
+          console.error('Failed to generate leaderboard image', err);
+        })
+        .finally(() => {
+            setIsDownloading(false);
+        });
+    }, 100);
   }, [leaderboardPeriod, quarter, year]);
 
   const lastUpdatedTimestamp = new Date().toLocaleString('en-US', {
@@ -64,7 +71,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ technicians, onRemove,
                     <img src={companyLogo} alt="Company Logo" className="w-20 h-20 object-contain" />
                 )}
                 {companyName && (
-                    <span className="text-2xl font-bold text-[#EAF0F6]">{companyName}</span>
+                    <div className="flex items-center gap-3">
+                        <h3 className="text-2xl font-bold text-[#EAF0F6] leading-tight">{companyName}</h3>
+                    </div>
                 )}
             </div>
             <div className="flex-1 text-center">
@@ -78,7 +87,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ technicians, onRemove,
             </div>
         </div>
         
-        <div className="overflow-x-auto rounded-lg border border-[#2A394D]">
+        <div className={`overflow-x-auto rounded-lg border border-[#2A394D] ${isDownloading ? 'leaderboard-download-mode' : ''}`}>
           <table className="min-w-full text-sm text-left table-fixed">
             <thead className="text-xs font-semibold uppercase tracking-wider bg-[#1E2B3A] text-[#C7D0DC] opacity-80">
               <tr>
